@@ -219,7 +219,8 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="dd-mm-yyyy"/>
+            android:hint="dd-mm-yyyy"
+            android:textSize="18sp"/>
 
     </LinearLayout>
     <LinearLayout
@@ -239,7 +240,8 @@
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="time"/>
+            android:hint="time"
+            android:textSize="18sp"/>
 
     </LinearLayout>
 

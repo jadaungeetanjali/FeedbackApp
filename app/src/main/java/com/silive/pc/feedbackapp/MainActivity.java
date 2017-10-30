@@ -20,12 +20,25 @@ public class MainActivity extends AppCompatActivity {
 
         FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.main_fragment_container);
 
+        Bundle studentBundle = new Bundle();
+        studentBundle.putString("type", "students");
+        final FeedbackFragment studentFragment = new FeedbackFragment();
+        studentFragment.setArguments(studentBundle);
+
+        Bundle delegatesBundle = new Bundle();
+        studentBundle.putString("type", "delegates");
+        final FeedbackFragment delegatesFragment = new FeedbackFragment();
+        delegatesFragment.setArguments(delegatesBundle);
+
+        Bundle visitorsBundle = new Bundle();
+        studentBundle.putString("type", "visitors");
+        final FeedbackFragment visitorsFragment = new FeedbackFragment();
+        visitorsFragment.setArguments(visitorsBundle);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
-        final FeedbackFragment studentFragment = new FeedbackFragment();
-        final FeedbackFragment delegatesFragment = new FeedbackFragment();
-        final FeedbackFragment visitorsFragment = new FeedbackFragment();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Students"));

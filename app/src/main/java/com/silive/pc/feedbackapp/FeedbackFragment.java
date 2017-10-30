@@ -19,7 +19,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.silive.pc.feedbackapp.Models.InternationalDelegates;
+import com.silive.pc.feedbackapp.Models.Students;
+import com.silive.pc.feedbackapp.Models.Visitors;
 import com.squareup.picasso.Picasso;
 
 
@@ -35,6 +41,9 @@ public class FeedbackFragment extends Fragment {
     private Button sendButton, photoButton;
     private static final int CAMERA_REQUEST = 1888;
 
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference studentsDatabaseReference, delegatesDatabaseReference, visitorsDatabaseRefernce;
+
     public FeedbackFragment() {
         // Required empty public constructor
     }
@@ -45,6 +54,22 @@ public class FeedbackFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_feedback, container, false);
+
+        final String type = this.getArguments().getString("type");
+
+        Log.i("output", type);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+
+        if (type == "students") {
+            studentsDatabaseReference = firebaseDatabase.getReference().child("Students");
+        }else
+            if (type == "delegates"){
+                delegatesDatabaseReference = firebaseDatabase.getReference().child("International Delegates");
+            }else
+                if (type == "visitors"){
+                    visitorsDatabaseRefernce = firebaseDatabase.getReference().child("visitors");
+                }
 
         nameEditText = (EditText) rootView.findViewById(R.id.name);
         designationEditText = (EditText) rootView.findViewById(R.id.designation);
@@ -143,42 +168,35 @@ public class FeedbackFragment extends Fragment {
             }
         });
 
+        final String finalDate = date;
+        final String finalTime = time;
         sendButton.setOnClickListener(new View.OnClickListener()
 
         {
             @Override
             public void onClick(View v) {
 
-               /* if(name.equalsIgnoreCase("")){
-                    nameEditText.setError("enter name");
-                }else{
-                    nameEditText.setError(null);
+                if (type == "students") {
+                    Students students = new Students(nameEditText.getText().toString(), designationEditText.getText().toString(),
+                            organisationEditText.getText().toString(), organisationAddressEditText.getText().toString(),
+                            emailIdEditText.getText().toString(), mobileEditText.getText().toString(), feedbackEditText.getText().toString(),
+                            null, null, finalDate, finalTime);
+                    studentsDatabaseReference.push().setValue(students);
+                }else if (type == "delegates"){
+                    InternationalDelegates delegates = new InternationalDelegates(nameEditText.getText().toString(), designationEditText.getText().toString(),
+                            organisationEditText.getText().toString(), organisationAddressEditText.getText().toString(),
+                            emailIdEditText.getText().toString(), mobileEditText.getText().toString(), feedbackEditText.getText().toString(),
+                            null, null, finalDate, finalTime);
+                    delegatesDatabaseReference.push().setValue(delegates);
+                }else if (type == "visitors"){
+                    Visitors visitors = new Visitors(nameEditText.getText().toString(), designationEditText.getText().toString(),
+                            organisationEditText.getText().toString(), organisationAddressEditText.getText().toString(),
+                            emailIdEditText.getText().toString(), mobileEditText.getText().toString(), feedbackEditText.getText().toString(),
+                            null, null, finalDate, finalTime);
+                    visitorsDatabaseRefernce.push().setValue(visitors);
                 }
-                if (designation.equalsIgnoreCase("")){
-                    designationEditText.setError("enter designation");
-                }else{
-                    designationEditText.setError(null);
-                }
-                if (organisation.equalsIgnoreCase("")){
-                    organisationEditText.setError("enter organisation");
-                }else{
-                    organisationEditText.setError(null);
-                }
-                if (emailId.equalsIgnoreCase("")){
-                    emailIdEditText.setError("enter email");
-                }else{
-                    emailIdEditText.setError(null);
-                }
-                if (mobile.equalsIgnoreCase("")){
-                    mobileEditText.setError("enter mobile");
-                }else{
-                    mobileEditText.setError(null);
-                }
-                if (feedback.equalsIgnoreCase("")) {
-                    feedbackEditText.setError("enter feedback");
-                }else {
-                    feedbackEditText.setError(null);
-                } */
+
+                Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
                 //Log.i("output", "hello");
                 nameEditText.setText("");
                 designationEditText.setText("");
