@@ -40,6 +40,7 @@ public class FeedbackFragment extends Fragment {
     private ImageView signatureImageView, photoImageView;
     private Button sendButton, photoButton;
     private static final int CAMERA_REQUEST = 1888;
+    private static int flag = 0;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference studentsDatabaseReference, delegatesDatabaseReference, visitorsDatabaseRefernce;
@@ -57,14 +58,15 @@ public class FeedbackFragment extends Fragment {
 
         final String type = this.getArguments().getString("type");
 
-        Log.i("output", type);
+        //Log.i("output", type);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         if (type == "students") {
             studentsDatabaseReference = firebaseDatabase.getReference().child("Students");
         }else
-            if (type == "delegates"){
+            if (type == "delegates")
+            {
                 delegatesDatabaseReference = firebaseDatabase.getReference().child("International Delegates");
             }else
                 if (type == "visitors"){
@@ -97,37 +99,8 @@ public class FeedbackFragment extends Fragment {
         final String mobile = mobileEditText.getText().toString();
         final String feedback = feedbackEditText.getText().toString();
 
-        /*
-        if(name.length() == 0){
-            nameEditText.setError("enter name");
-        }else{
-            nameEditText.setError(null);
-        }
-            if (designation.length() == 0){
-                designationEditText.setError("enter designation");
-            }else{
-                designationEditText.setError(null);
-            }
-                if (organisation.length() == 0){
-                    organisationEditText.setError("enter organisation");
-                }else{
-                    organisationEditText.setError(null);
-                }
-                    if (emailId.length() == 0){
-                        emailIdEditText.setError("enter email");
-                    }else{
-                        emailIdEditText.setError(null);
-                    }
-                        if (mobile.length() == 0){
-                            mobileEditText.setError("enter mobile");
-                        }else{
-                            mobileEditText.setError(null);
-                        }
-                            if (feedback.length() == 0) {
-                                feedbackEditText.setError("enter feedback");
-                            }else {
-                                feedbackEditText.setError(null);
-                            } */
+
+
         java.util.Date noteTS = Calendar.getInstance().getTime();
 
         String time = "hh:mm"; // 12:00
@@ -147,7 +120,94 @@ public class FeedbackFragment extends Fragment {
         });
 
 
+        nameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                Validation.hasText(nameEditText);
+            }
+        });
+
+        designationEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                Validation.hasText(designationEditText);
+            }
+        });
+
+        organisationEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                Validation.hasText(organisationEditText);
+            }
+        });
+
+        emailIdEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                Validation.isEmailAddress(emailIdEditText, true);
+            }
+        });
+
         mobileEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                Validation.isPhoneNumber(mobileEditText, false);
+            }
+        });
+
+        feedbackEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -165,6 +225,7 @@ public class FeedbackFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
 
+                Validation.hasText(feedbackEditText);
             }
         });
 
@@ -176,27 +237,37 @@ public class FeedbackFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (type == "students") {
+                if (!checkValidation ()){
+                    Toast.makeText(getContext(), "Form contains error", Toast.LENGTH_LONG).show();
+                    flag = 1;
+
+                }
+
+
+                if (type == "students" && flag == 0) {
                     Students students = new Students(nameEditText.getText().toString(), designationEditText.getText().toString(),
                             organisationEditText.getText().toString(), organisationAddressEditText.getText().toString(),
                             emailIdEditText.getText().toString(), mobileEditText.getText().toString(), feedbackEditText.getText().toString(),
                             null, null, finalDate, finalTime);
                     studentsDatabaseReference.push().setValue(students);
-                }else if (type == "delegates"){
+                    Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
+                }else if (type == "delegates" && flag == 0){
                     InternationalDelegates delegates = new InternationalDelegates(nameEditText.getText().toString(), designationEditText.getText().toString(),
                             organisationEditText.getText().toString(), organisationAddressEditText.getText().toString(),
                             emailIdEditText.getText().toString(), mobileEditText.getText().toString(), feedbackEditText.getText().toString(),
                             null, null, finalDate, finalTime);
                     delegatesDatabaseReference.push().setValue(delegates);
-                }else if (type == "visitors"){
+                    Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
+                }else if (type == "visitors" && flag == 0){
                     Visitors visitors = new Visitors(nameEditText.getText().toString(), designationEditText.getText().toString(),
                             organisationEditText.getText().toString(), organisationAddressEditText.getText().toString(),
                             emailIdEditText.getText().toString(), mobileEditText.getText().toString(), feedbackEditText.getText().toString(),
                             null, null, finalDate, finalTime);
                     visitorsDatabaseRefernce.push().setValue(visitors);
+                    Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
                 }
 
-                Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
                 //Log.i("output", "hello");
                 nameEditText.setText("");
                 designationEditText.setText("");
@@ -222,4 +293,28 @@ public class FeedbackFragment extends Fragment {
         }
     }
 
+    private boolean checkValidation() {
+        boolean validation = true;
+
+        if (!Validation.hasText(nameEditText)){
+            validation = false;
+        }
+        if (!Validation.hasText(designationEditText)){
+            validation = false;
+        }
+        if (!Validation.hasText(organisationEditText)){
+            validation = false;
+        }
+        if (!Validation.hasText(feedbackEditText)){
+            validation = false;
+        }
+        if (!Validation.isEmailAddress(emailIdEditText, true)) {
+            validation = false;
+        }
+        if (!Validation.isPhoneNumber(mobileEditText, false)) {
+            validation = false;
+        }
+
+        return validation;
+    }
 }

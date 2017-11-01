@@ -26,12 +26,12 @@ public class MainActivity extends AppCompatActivity {
         studentFragment.setArguments(studentBundle);
 
         Bundle delegatesBundle = new Bundle();
-        studentBundle.putString("type", "delegates");
+        delegatesBundle.putString("type", "delegates");
         final FeedbackFragment delegatesFragment = new FeedbackFragment();
         delegatesFragment.setArguments(delegatesBundle);
 
         Bundle visitorsBundle = new Bundle();
-        studentBundle.putString("type", "visitors");
+        visitorsBundle.putString("type", "visitors");
         final FeedbackFragment visitorsFragment = new FeedbackFragment();
         visitorsFragment.setArguments(visitorsBundle);
 
