@@ -1,5 +1,6 @@
 package com.silive.pc.feedbackapp;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -75,5 +76,9 @@ public class MainActivity extends AppCompatActivity {
     }
     private void fragmentTransition(Fragment fragment) {
         getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragment).commit();
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -1,12 +1,17 @@
 package com.silive.pc.feedbackapp;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Calendar;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,9 +43,13 @@ public class FeedbackFragment extends Fragment {
             emailIdEditText, mobileEditText, feedbackEditText;
     private TextView timeTextView, dateTextView;
     private ImageView signatureImageView, photoImageView;
-    private Button sendButton, photoButton;
+    private Button sendButton, photoButton, signatureButton;
     private static final int CAMERA_REQUEST = 1888;
     private static int flag = 0;
+    private static int TAKE_OR_PICK = 1;
+
+    private Bitmap imageBitmap;
+    private String picturePath;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference studentsDatabaseReference, delegatesDatabaseReference, visitorsDatabaseRefernce;
@@ -89,7 +98,7 @@ public class FeedbackFragment extends Fragment {
 
         sendButton = (Button) rootView.findViewById(R.id.send_button);
         photoButton = (Button) rootView.findViewById(R.id.photo_button);
-
+        signatureButton = (Button) rootView.findViewById(R.id.signature_button);
 
         final String name = nameEditText.getText().toString();
         final String designation = designationEditText.getText().toString();
@@ -111,11 +120,25 @@ public class FeedbackFragment extends Fragment {
         dateTextView.setText(DateFormat.format(date, noteTS));
         date = dateTextView.getText().toString();
 
-        photoButton.setOnClickListener(new View.OnClickListener() {
+        signatureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(cameraIntent, CAMERA_REQUEST);
+            }
+        });
+
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 TAKE_OR_PICK = 1;
+                Intent takePictureIntent = new Intent(
+                        MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+                }
+                //Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                //startActivityForResult(cameraIntent, CAMERA_REQUEST);
             }
         });
 
@@ -128,11 +151,19 @@ public class FeedbackFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+                if (s.toString().trim().length() > 0) {
+                    sendButton.setEnabled(true);
+                } else {
+                    sendButton.setEnabled(false);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
+                if (s.length() > 20){
+                    Toast.makeText(getContext(), "Character limit is 20", Toast.LENGTH_SHORT).show();
+                }
                 Validation.hasText(nameEditText);
             }
         });
@@ -144,7 +175,11 @@ public class FeedbackFragment extends Fragment {
             }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                if (s.toString().trim().length() > 0) {
+                    sendButton.setEnabled(true);
+                } else {
+                    sendButton.setEnabled(false);
+                }
 
             }
 
@@ -163,6 +198,11 @@ public class FeedbackFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+                if (s.toString().trim().length() > 0) {
+                    sendButton.setEnabled(true);
+                } else {
+                    sendButton.setEnabled(false);
+                }
             }
 
             @Override
@@ -180,6 +220,11 @@ public class FeedbackFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+                if (s.toString().trim().length() > 0) {
+                    sendButton.setEnabled(true);
+                } else {
+                    sendButton.setEnabled(false);
+                }
             }
 
             @Override
@@ -197,13 +242,17 @@ public class FeedbackFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-
+                if (s.toString().trim().length() > 0) {
+                    sendButton.setEnabled(true);
+                } else {
+                    sendButton.setEnabled(false);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
-                Validation.isPhoneNumber(mobileEditText, false);
+                Validation.isPhoneNumber(mobileEditText, true);
             }
         });
 
@@ -283,13 +332,39 @@ public class FeedbackFragment extends Fragment {
 
         return rootView;
     }
-
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Uri photoUrl = data.getData();
-            //Log.i("photouri", String.valueOf(photoUrl));
-            //Log.v("output", String.valueOf(String.valueOf(photoUrl)));
-            Picasso.with(photoImageView.getContext()).load(Uri.parse(String.valueOf(String.valueOf(photoUrl)))).into(photoImageView);
+       /* if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+           // Bundle extras = data.getExtras();
+            //Uri photoUrl = data.getData();
+            Bundle extras = data.getExtras();
+            Bitmap photo = (Bitmap) extras.get("data");
+            photoImageView.setImageBitmap(photo);
+
+        }*/
+        if (requestCode == CAMERA_REQUEST && resultCode == getActivity().RESULT_OK && null != data  && TAKE_OR_PICK == 1) {
+
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            photoImageView.setImageBitmap(photo);
+            if (imageBitmap != null) {
+                try {
+                    long fileName = System.currentTimeMillis();
+                    File outputFile = new File(Environment.getExternalStorageDirectory(), "photo_" + fileName + ".jpg");
+                    FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+                    imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 300, 300, true);
+                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 75, fileOutputStream);
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                    File imageFile = new File(Environment.getExternalStorageDirectory() +File.separator + "photo_" + fileName + ".jpg");
+                    picturePath = imageFile.getPath();
+                    Toast.makeText(getContext(), picturePath, Toast.LENGTH_SHORT).show();
+                    //System.out.println("FILE PATH -> "+picturePath);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+
+            }
         }
     }
 

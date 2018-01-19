@@ -23,7 +23,7 @@
        <TextView
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:text="Name(*) - "
+           android:text="Name - "
            android:textStyle="bold"
            android:textSize="18sp"/>
 
@@ -31,7 +31,8 @@
            android:id="@+id/name"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:hint="Full name"/>
+           android:hint="Full name"
+           android:maxLength="30"/>
 
 </LinearLayout>
 
@@ -44,7 +45,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Designation(*) - "
+            android:text="Designation - "
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -52,7 +53,8 @@
             android:id="@+id/designation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Designation"/>
+            android:hint="Designation"
+            android:maxLength="20"/>
 
     </LinearLayout>
 
@@ -65,7 +67,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Organisation(*) - "
+            android:text="Organisation - "
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -73,7 +75,8 @@
             android:id="@+id/organisation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Organisation"/>
+            android:hint="Organisation"
+            android:maxLength="50"/>
 
     </LinearLayout>
 
@@ -86,7 +89,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Organisation Address - "
+            android:text="Country/State"
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -94,7 +97,8 @@
             android:id="@+id/organisation_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Organisation Address"/>
+            android:hint="Country/State"
+            android:maxLength="50"/>
 
     </LinearLayout>
 
@@ -107,7 +111,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Email Id(*) - "
+            android:text="Email Id - "
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -115,7 +119,8 @@
             android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Email Id"/>
+            android:hint="Email Id"
+            android:maxLength="50"/>
 
     </LinearLayout>
 
@@ -128,7 +133,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mobile(*) - "
+            android:text="Mobile - "
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -136,7 +141,9 @@
             android:id="@+id/mobile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Mobile"/>
+            android:hint="Mobile"
+            android:maxLength="10"
+            android:inputType="number"/>
 
     </LinearLayout>
 
@@ -149,7 +156,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Feedback(*) - "
+            android:text="Feedback - "
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -157,7 +164,8 @@
             android:id="@+id/feedback"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Feedback"/>
+            android:hint="Feedback"
+            android:maxLength="200"/>
 
     </LinearLayout>
 
@@ -167,10 +175,11 @@
         android:orientation="horizontal"
         android:layout_marginLeft="5dp">
 
-        <TextView
+        <Button
+            android:id="@+id/signature_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Signature(*) - "
+            android:text="Signature "
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -197,8 +206,8 @@
 
         <ImageView
             android:id="@+id/photo"
-            android:layout_width="50dp"
-            android:layout_height="50dp" />
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
 
     </LinearLayout>
 
@@ -211,7 +220,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date(*) - "
+            android:text="Date - "
             android:textStyle="bold"
             android:textSize="18sp"/>
 
@@ -232,7 +241,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Time(*) - "
+            android:text="Time - "
             android:textStyle="bold"
             android:textSize="18sp"/>
 
