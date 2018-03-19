@@ -181,12 +181,13 @@
             android:layout_height="wrap_content"
             android:text="Signature "
             android:textStyle="bold"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:layout_gravity="center"/>
 
         <ImageView
             android:id="@+id/signature"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp" />
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
 
     </LinearLayout>
 
@@ -202,7 +203,8 @@
             android:layout_height="wrap_content"
             android:text="Photo "
             android:textStyle="bold"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:layout_gravity="center"/>
 
         <ImageView
             android:id="@+id/photo"
@@ -259,7 +261,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:text="SEND"
+        android:text="SUBMIT"
         android:layout_marginLeft="125dp"
         android:textColor="@android:color/white"
         android:background="@color/colorPrimary"

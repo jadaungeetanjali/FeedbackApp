@@ -8,6 +8,7 @@ import java.util.Calendar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,8 +27,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.silive.pc.feedbackapp.Models.InternationalDelegates;
 import com.silive.pc.feedbackapp.Models.Students;
 import com.silive.pc.feedbackapp.Models.Visitors;
@@ -48,11 +53,16 @@ public class FeedbackFragment extends Fragment {
     private static int flag = 0;
     private static int TAKE_OR_PICK = 1;
 
+    private static String type;
+
     private Bitmap imageBitmap;
     private String picturePath;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference studentsDatabaseReference, delegatesDatabaseReference, visitorsDatabaseRefernce;
+
+    private FirebaseStorage firebaseStorage;
+    private StorageReference studentPhotoStorageReference, delegatesPhotoStorageReference, visitorsPhotoStorageReference, photoReference;
 
     public FeedbackFragment() {
         // Required empty public constructor
@@ -65,21 +75,29 @@ public class FeedbackFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_feedback, container, false);
 
-        final String type = this.getArguments().getString("type");
+        type = this.getArguments().getString("type");
 
         //Log.i("output", type);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 
+        firebaseStorage = FirebaseStorage.getInstance();
+
+
         if (type == "students") {
             studentsDatabaseReference = firebaseDatabase.getReference().child("Students");
+            studentPhotoStorageReference = firebaseStorage.getReference().child("student_photo");
         }else
             if (type == "delegates")
             {
                 delegatesDatabaseReference = firebaseDatabase.getReference().child("International Delegates");
+                delegatesPhotoStorageReference = firebaseStorage.getReference().child("International_delegates_photo");
+
             }else
                 if (type == "visitors"){
                     visitorsDatabaseRefernce = firebaseDatabase.getReference().child("visitors");
+                    visitorsPhotoStorageReference = firebaseStorage.getReference().child("visitor_photo");
+
                 }
 
         nameEditText = (EditText) rootView.findViewById(R.id.name);
@@ -123,8 +141,10 @@ public class FeedbackFragment extends Fragment {
         signatureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                //Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                //startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                Intent i = new Intent(getActivity(), CaptureSignatureActivity.class);
+                startActivityForResult(i, 2);
             }
         });
 
@@ -164,7 +184,7 @@ public class FeedbackFragment extends Fragment {
                 if (s.length() > 20){
                     Toast.makeText(getContext(), "Character limit is 20", Toast.LENGTH_SHORT).show();
                 }
-                Validation.hasText(nameEditText);
+                Validation.isAlphabet(nameEditText, true);
             }
         });
 
@@ -186,7 +206,7 @@ public class FeedbackFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
 
-                Validation.hasText(designationEditText);
+                Validation.isAlphabet(designationEditText, true);
             }
         });
 
@@ -207,8 +227,9 @@ public class FeedbackFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                Validation.isAlphabet(organisationEditText, true);
 
-                Validation.hasText(organisationEditText);
+
             }
         });
 
@@ -274,7 +295,8 @@ public class FeedbackFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
 
-                Validation.hasText(feedbackEditText);
+                Validation.isAlphabet(feedbackEditText, true);
+
             }
         });
 
@@ -297,27 +319,25 @@ public class FeedbackFragment extends Fragment {
                     Students students = new Students(nameEditText.getText().toString(), designationEditText.getText().toString(),
                             organisationEditText.getText().toString(), organisationAddressEditText.getText().toString(),
                             emailIdEditText.getText().toString(), mobileEditText.getText().toString(), feedbackEditText.getText().toString(),
-                            null, null, finalDate, finalTime);
+                            "/storage/gallery/sign/file", "/storage/gallery/image/file", finalDate, finalTime);
                     studentsDatabaseReference.push().setValue(students);
                     Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
                 }else if (type == "delegates" && flag == 0){
                     InternationalDelegates delegates = new InternationalDelegates(nameEditText.getText().toString(), designationEditText.getText().toString(),
                             organisationEditText.getText().toString(), organisationAddressEditText.getText().toString(),
                             emailIdEditText.getText().toString(), mobileEditText.getText().toString(), feedbackEditText.getText().toString(),
-                            null, null, finalDate, finalTime);
+                            "/storage/gallery/sign/file", "/storage/gallery/image/file", finalDate, finalTime);
                     delegatesDatabaseReference.push().setValue(delegates);
                     Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
                 }else if (type == "visitors" && flag == 0){
                     Visitors visitors = new Visitors(nameEditText.getText().toString(), designationEditText.getText().toString(),
                             organisationEditText.getText().toString(), organisationAddressEditText.getText().toString(),
                             emailIdEditText.getText().toString(), mobileEditText.getText().toString(), feedbackEditText.getText().toString(),
-                            null, null, finalDate, finalTime);
+                            "/storage/gallery/sign/file", "/storage/gallery/image/file", finalDate, finalTime);
                     visitorsDatabaseRefernce.push().setValue(visitors);
                     Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
                 }
 
-                //Toast.makeText(getContext(), "Uploading Complete..", Toast.LENGTH_SHORT).show();
-                //Log.i("output", "hello");
                 nameEditText.setText("");
                 designationEditText.setText("");
                 organisationEditText.setText("");
@@ -325,6 +345,8 @@ public class FeedbackFragment extends Fragment {
                 emailIdEditText.setText("");
                 mobileEditText.setText("");
                 feedbackEditText.setText("");
+                signatureImageView.setImageResource(0);
+                photoImageView.setImageResource(0);
 
             }
         });
@@ -334,38 +356,22 @@ public class FeedbackFragment extends Fragment {
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-       /* if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-           // Bundle extras = data.getExtras();
-            //Uri photoUrl = data.getData();
+       if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+
+            Uri photoUrl = data.getData();
             Bundle extras = data.getExtras();
             Bitmap photo = (Bitmap) extras.get("data");
             photoImageView.setImageBitmap(photo);
 
-        }*/
-        if (requestCode == CAMERA_REQUEST && resultCode == getActivity().RESULT_OK && null != data  && TAKE_OR_PICK == 1) {
 
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            photoImageView.setImageBitmap(photo);
-            if (imageBitmap != null) {
-                try {
-                    long fileName = System.currentTimeMillis();
-                    File outputFile = new File(Environment.getExternalStorageDirectory(), "photo_" + fileName + ".jpg");
-                    FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                    imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 300, 300, true);
-                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 75, fileOutputStream);
-                    fileOutputStream.flush();
-                    fileOutputStream.close();
-                    File imageFile = new File(Environment.getExternalStorageDirectory() +File.separator + "photo_" + fileName + ".jpg");
-                    picturePath = imageFile.getPath();
-                    Toast.makeText(getContext(), picturePath, Toast.LENGTH_SHORT).show();
-                    //System.out.println("FILE PATH -> "+picturePath);
-                }catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                }
+       }
+        if (requestCode == 2 && resultCode == 1) {
+            Bitmap b = BitmapFactory.decodeByteArray(
+                    data.getByteArrayExtra("byteArray"), 0,
+                    data.getByteArrayExtra("byteArray").length);
+            signatureImageView.setImageBitmap(b);
+       }
 
-            }
-        }
     }
 
     private boolean checkValidation() {

@@ -15,10 +15,13 @@ public class Validation {
 
     private static final String EMAIL_REGEX = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
     private static final String PHONE_REGEX = "^[789]\\d{9}$";
+    private static final String ALPHABET_REGEX = "[a-zA-Z ]+";
 
     private static final String REQUIRED_MSG = "required";
     private static final String EMAIL_MSG = "invalid email";
     private static final String PHONE_MSG = "invalid number";
+    private static final String ALPHABET_MSG = "alphabets only";
+
 
     public static boolean isEmailAddress(EditText editText, boolean required) {
         return isValid(editText, EMAIL_REGEX, EMAIL_MSG, required);
@@ -27,6 +30,10 @@ public class Validation {
     public static boolean isPhoneNumber(EditText editText, boolean required) {
         //Log.i("hello", editText.getText().toString());
         return isValid(editText, PHONE_REGEX, PHONE_MSG, required);
+    }
+    public static boolean isAlphabet(EditText editText, boolean required) {
+        return isValid(editText, ALPHABET_REGEX, ALPHABET_MSG, required);
+
     }
 
     public static boolean isValid(EditText editText, String regex, String errMsg, boolean required) {
